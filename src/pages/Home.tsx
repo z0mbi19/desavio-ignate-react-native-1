@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, ToastAndroid } from 'react-native';
 
 import { Header } from '../components/Header';
 import { Task, TasksList } from '../components/TasksList';
@@ -10,14 +10,34 @@ export function Home() {
 
   function handleAddTask(newTaskTitle: string) {
     //TODO - add new task
+    const data = {
+      id: new Date().getTime(),
+      title: newTaskTitle,
+      done: false
+    }
+    if (newTaskTitle === "") {
+      return ToastAndroid.show("O campo não pode esta vazio", ToastAndroid.SHORT)
+    }
+    setTasks(oldState => [...oldState, data])
+    console.log(tasks)
   }
 
   function handleToggleTaskDone(id: number) {
     //TODO - toggle task done if exists
+    console.log(id)
+    const updadedTasks = tasks.map(task => ({ ...task }))
+    const foudItem = updadedTasks.find(item => item.id === id)
+    if (!foudItem) {
+      return;
+    }
+    foudItem.done = !foudItem.done
+    setTasks(updadedTasks)
+
   }
 
   function handleRemoveTask(id: number) {
     //TODO - remove task from state
+    setTasks(oldState => oldState.filter(task => task.id !== id))
   }
 
   return (
@@ -26,10 +46,10 @@ export function Home() {
 
       <TodoInput addTask={handleAddTask} />
 
-      <TasksList 
-        tasks={tasks} 
+      <TasksList
+        tasks={tasks}
         toggleTaskDone={handleToggleTaskDone}
-        removeTask={handleRemoveTask} 
+        removeTask={handleRemoveTask}
       />
     </View>
   )
